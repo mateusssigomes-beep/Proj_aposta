@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from aposta import Aposta    
+from models.bet import Aposta    
  
 @dataclass
 class Jogo():

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from user import Usuario
+from models.user import Usuario
 
 
 @dataclass
@@ -12,9 +12,7 @@ class Aposta():
     usuarios_apostando: int = 0 # quantidade de usuarios apostando naquele resultado
     
         
-    def criar_aposta(self):
-        pass 
-        
+
     
     
     

@@ -3,8 +3,8 @@ from dataclasses import dataclass
 #definindo o que tera dentro da calsse usuário
 @dataclass
 class Usuario():
-    nome: str # nome do usuario real 
-    idade: int # idade real 
+    _nome: str # nome do usuario real 
+    _idade: int # idade real 
     _cpf: str # cpf do usuario real
     gmail: str # gmail, com conferencia de gmail 
     _login: str # login para o usuario entrar no sistema, com conferencia de login
