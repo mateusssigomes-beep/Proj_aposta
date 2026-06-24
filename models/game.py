@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from models.bet import Aposta    
- 
+from datetime import datetime
 @dataclass
 class Jogo():
-    id: int # Primary key 
-    times: str # sempre dois times por jogo 
+    id: int # Primary key
+    id_team: int # Foreign key para o time em jogo
     status: str # mostrar quel time mais apostado na partida 
-    gols_time1: int = 0
-    gols_time2: int = 0
-    usuarios_time1: int = 0
-    usuarios_time2: int = 0
+    data_do_jogo: datetime 
+    
