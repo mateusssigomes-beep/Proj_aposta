@@ -13,16 +13,3 @@ class Usuario():
     _senha: str # conferencia de senha
     admin: bool # se adimin == true se user == false, não contem quantidade de pontos 
     ranking: int = 0 # : to-do  
-    
-    @property
-    def cpf(self):
-        return self._cpf
-    
-    @cpf.setter
-    def cpf(self, value):
-        cpf = CPF()
-        cpf.validate(value)
-        if cpf == True:
-            print()
-    
-    

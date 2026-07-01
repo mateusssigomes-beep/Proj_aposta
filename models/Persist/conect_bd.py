@@ -12,6 +12,7 @@ class ConexaoBD:
 
     def conectar(self):
         try:
+            # Tenta fazer a conxão usando a intancia do objeto 
             self.connection =psycopg2.connect(
                 user=self.user,
                 password=self.password,
@@ -19,7 +20,8 @@ class ConexaoBD:
                 port=self.port,
                 database=self.database
             )
-            print("Conexão com o banco de dados estabelecida com sucesso!")
+            # Se os dados estiverem de acordo com o que tem no banco ele conecta usando o .connection. 
+            #Adiciona essa funcionalidade ao crusor, que sera o responsável por atender as reuests.
             self.cursor = self.connection.cursor()
             # Executa uma query simples para verificar a versão do Postgres
             self.cursor.execute("SELECT version();")
@@ -34,10 +36,7 @@ class ConexaoBD:
             self.connection.close()
             print("Conexão com o banco de dados fechada.")
 
-
-
-
-    def execute_command(self, sql: str, valores: List[Tuple[Any]]):
+    def executar_comando(self, sql: str, valores: List[Tuple[Any]]):
         """Executa comando com múltiplos valores usando executemany."""
         if not self.cursor or not self.connection:
             raise RuntimeError("Conexão não foi estabelecida. Chame conectar() primeiro.")
@@ -48,9 +47,15 @@ class ConexaoBD:
             self.connection.rollback()
             raise error
             
+            
+    def criar_tabelas(self):
+        pass
+
+    def destruir_tabelas(self):
+        pass
 
 # Exemplo de uso (descomente para testar):
-conectar = ConexaoBD(user='postgres', password='123456', host='127.0.0.1', port='5432', database='db_projaposta')
-# conectar.conectar()
+usuario = ConexaoBD(user='postgres', password='123456', host='127.0.0.1', port='5432', database='db_projaposta')
 # # ... use os métodos aqui ...
-# conectar.fechar_conexao()
+usuario.conectar()
+usuario.fechar_conexao()
