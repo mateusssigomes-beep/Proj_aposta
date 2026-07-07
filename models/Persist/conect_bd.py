@@ -49,13 +49,43 @@ class ConexaoBD:
             
             
     def criar_tabelas(self):
-        pass
+        if self.cursor:
+            try:
+                self.cursor.execute("""
+                    CREATE TABLE Team (
+                        id INT PRIMARY KEY,
+                        nome VARCHAR (100) NOT NULL,
+                        grupo VARCHAR (20) NOT NULL,
+                        vitorias INT NOT NULL,
+                        empates INT NOT NULL,
+                        derrotas INT NOT NULL
+                        );
+                    CREATE TABLE bet();
+                    
+                    
+                    
 
+                        """)
+                if self.connection:
+                    self.connection.commit()
+                print("Tabelas Criadas")
+            except:
+                print('Tabela não pdoe ser criada')
+            
+            
     def destruir_tabelas(self):
-        pass
+        if self.cursor:
+            try:
+                self.cursor.execute("""
+                    DROP TABLE Team; """)
+                if self.connection:
+                    self.connection.commit()
+                    print("Tabelas excluidas")
+            except:
+                print('Tabela inexistente')
 
 # Exemplo de uso (descomente para testar):
-usuario = ConexaoBD(user='postgres', password='123456', host='127.0.0.1', port='5432', database='db_projaposta')
+conector = ConexaoBD(user='postgres', password='123456', host='127.0.0.1', port='5432', database='db_projaposta')
 # # ... use os métodos aqui ...
-usuario.conectar()
-usuario.fechar_conexao()
+#usuario.conectar()
+# usuario.criar_tabelas()
