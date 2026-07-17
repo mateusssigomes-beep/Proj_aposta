@@ -3,23 +3,45 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 import sqlalchemy 
 from sqlalchemy.exc import SQLAlchemyError
 
-"""Conexão modo SQLalchemy, Usando o Url do banco de dados"""
-URL_BANCO = ("postgresql://postgres:123456@127.0.0.1:5432/db_projaposta")
-engine = create_engine(URL_BANCO)
+"""
+Conexão modo SQLalchemy, Usando o Url do banco de dados  e Drive
+Nesta conexão será usado como Drive o Psycopg2
+"""
+URL_BANCO = ("postgresql+psycopg2://postgres:123456@127.0.0.1:5432/db_projaposta")
+"""
+Engine sera o core da conexão com  o banco, ele tende a conter as pools para cada chamada de sistema. 
+Também faz a tradução da lingaguem python para SQL, como um tradutor, Ele contem varias funcionalidades dentro de si.
+Elém de ser Lazy(Preguisoço), ele só entra em Ação quando chamado, masmo após criar ele não tem atuação dentro do banco de dados
+"""
 
-"""Conectando a sessao local"""
-sessaolocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-"""Crando a calsse que crias as tabelas"""
+engine = create_engine(URL_BANCO, echo=True) # create_engine recebe os parametros de Url do banco para conexão e echo=True, que tem como função mostrar todas as geraçõe SQL
+
+"""
+Conectando a sessao local,
+Bind = engine:  
+autoflush = True: Faz um rascunho da Operação dentro do banco, passivél de fazer rollback mesmo sem estar commitado. 
+autocommit = False: Ele não commita nada até que o comando db.commit() seja passado
+"""
+sessaoloc = sessionmaker(bind=engine, autoflush=True, autocommit=False)
+
+
+
+"""
+Crando a calsse que crias as tabelas
+"""
 Base = declarative_base()
 
 
-def testa_conxao():
+"""
+Método teste para saber se a conexão foi bem sucedida ou não
+"""
+def testa_conec():
     try:
         """Traz a versão do Banco de dados""" 
-        with engine.connect() as eng:
-            db_version = eng.execute(text("SELECT version();")).fetchone()
+        with engine.connect() as conn:
+            db_version = conn.execute(text("SELECT version();")).fetchone()
         
-        """Retorna print para saber se a conexão foi bem sucedida """
+        """Retorna print para saber se a conexão foi bem sucedida e os dadso da conxão e versão do SQLalchemy """
         print(f'Conectado ao banco de dados \nVersão do banco de dados: {db_version}')
         print(f'Versão do Alchemy Usado: {sqlalchemy.__version__}')
         
@@ -27,14 +49,25 @@ def testa_conxao():
     except SQLAlchemyError as error:
         print(f"não foi possível estabeler conexão com banco: {error}")
 
+'''
+Teste de fechar conexão
+'''
+def fechaconec():
+    with engine.connect() as conn:
+        fechamento = conn.close()
+        print(f'Conexão com banco foi cortada, {fechamento}')
+"""
+Comando que sera acessado pela FastApi, Para populas as tabelas
+"""
 
-def get_db():
-    bd  = sessaolocal()
+def get_db(): # Pegar algo dentro do banco de dados 
+    bd  = sessaoloc() # vincula a variavél a Session, 
+    '''
+     
+    '''
     try:
         yield bd
     finally:
         bd.close()
         
         
-if __name__ == "__main__":
-    testa_conxao()
