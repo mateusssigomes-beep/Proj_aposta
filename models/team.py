@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from Persist.conexao_bd import Base
+from persist.conexao_bd import Base
 
 class Team(Base):
     __tablename__ = "Team"

@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean,Date, Enum
-from Persist.conexao_bd import Base
+from persist.conexao_bd import Base
 import enum 
 
 # Definir se o user estara ativo ou não 
