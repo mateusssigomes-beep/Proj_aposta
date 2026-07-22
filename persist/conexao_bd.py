@@ -14,9 +14,9 @@ Também faz a tradução da lingaguem python para SQL, como um tradutor, Ele con
 Elém de ser Lazy(Preguisoço), ele só entra em Ação quando chamado, masmo após criar ele não tem atuação dentro do banco de dados
 """
 try:
-    engine = create_engine(URL_BANCO, echo=True) # create_engine recebe os parametros de Url do banco para conexão e echo=True, que tem como função mostrar todas as geraçõe SQL
+    engine = create_engine(URL_BANCO, echo=True)  # create_engine recebe os parametros de Url do banco para conexão e echo=True, que tem como função mostrar todas as geraçõe SQL
     with engine.connect() as conn:
-        versao = conn.execute(text("SELECT version();"))
+        versao = conn.execute(text("SELECT version();")).fetchone()
         print(f'Conexão com o banco estabelecida \nVersão do banco: {versao}'
               f'Versão do Alchemy:{sqlalchemy.__version__}'
               )
@@ -38,12 +38,29 @@ autocommit = False: Ele não commita nada até que o comando db.commit() seja pa
 Crando a calsse que crias as tabelas
 """
 try:
-    sessaoloc = sessionmaker(bind=engine, autoflush=True, autocommit=False)
+    Sessaoloc = sessionmaker(bind=engine, autoflush=True, autocommit=False)
     Base = declarative_base()
     print('Base criado e pronto para uso'
           'Sessão Criada')
 except StopIteration as error:
     print(f'Erro: {error}')
+
+
+
+
+def get_db(): # Pegar algo dentro do banco de dados 
+    bd  = Sessaoloc() # vincula a variavél a Session, 
+    '''
+     
+    '''
+    try:
+        yield bd
+    finally:
+        bd.close()
+        
+
+
+
 
 
 """
@@ -69,18 +86,8 @@ Teste de fechar conexão
 # def fechaconec():
 #     with engine.connect() as conn:
 #         fechamento = conn.close()
-#         print(f'Conexão com banco foi cortada, {fechamento}')
+#         print(f'Conexão com banco {versao} foi cortada, {fechamento}')
+        
 """
 Comando que sera acessado pela FastApi, Para populas as tabelas
 """
-
-def get_db(): # Pegar algo dentro do banco de dados 
-    bd  = sessaoloc() # vincula a variavél a Session, 
-    '''
-     
-    '''
-    try:
-        yield bd
-    finally:
-        bd.close()
-        

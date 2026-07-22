@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any,List  
+
 class ComandosDAO(ABC):
     """
     Garante que todas as classes DAO Obrigatóriamente herdem e Usem os métodos que estão na classe (DAO) abstrata
@@ -22,10 +23,11 @@ class ComandosDAO(ABC):
     
     @abstractmethod
     def pesquisar(self, id: int) -> Any:
+        return
         '''Pesquisa Regsitros Por ID, retornando o Objeto caso tenha sucesso, ou None caso não tenha nada'''
         pass
     
     @abstractmethod
-    def listar_todos(self, objeto: Any) -> Any:
+    def listar_todos(self) -> List[Any]:
         ''' Comando que lista todos os obejetos que já foram povoados dentro do Banco, Retorna  Obejto caso ache, e Nonoe caso não tenha nada'''
         pass
