@@ -17,13 +17,13 @@ class ComandosDAO(ABC):
         pass
     
     @abstractmethod
-    def editar(self, id: int, objeto: Any) -> bool:
+    def atualizar (self, id: int) -> bool:
         '''Edita e Atualiza os registros Existentes dentro do banco, retornando True caso tenha sucesso'''
         pass
     
     @abstractmethod
     def pesquisar(self, id: int) -> Any:
-        return
+
         '''Pesquisa Regsitros Por ID, retornando o Objeto caso tenha sucesso, ou None caso não tenha nada'''
         pass
     
@@ -31,3 +31,5 @@ class ComandosDAO(ABC):
     def listar_todos(self) -> List[Any]:
         ''' Comando que lista todos os obejetos que já foram povoados dentro do Banco, Retorna  Obejto caso ache, e Nonoe caso não tenha nada'''
         pass
+    
+   

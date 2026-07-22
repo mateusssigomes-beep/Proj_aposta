@@ -7,6 +7,7 @@ class StatusGame(enum.Enum):
     MARCADO = 'Marcado'
     ANDAMENTO = 'Em Andamento'
     ENCERRADO = 'Encerrado'
+    
 
 class Game(Base):
     __tablename__ = 'Game'
@@ -29,5 +30,5 @@ class Game(Base):
     
     """
     __table_args__ = (
-        CheckConstraint('time_casa_id != time_visitante_id', name = 'ck_times_diferentes')
+        CheckConstraint('time_casa_id != time_visitante_id', name = 'ck_times_diferentes'),
     )
