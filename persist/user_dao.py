@@ -17,12 +17,13 @@ class UserDAO(ComandosDAO):
         return db.query(User).filter(User.id == id).first()
     
     '''
-    
+    Comando de adicionar, Com base no objeto recebido, retornando True ou False
+    Adiciona, Commita(Salva a alteração), refresh para ver como esta a tebela com o objeto adicionado nela
     '''
     
     def adicionar(self, objeto: User ,db: Session)-> bool: 
         try:
-            db.add(objeto)
+            db.add(objeto) # db, foi mencionado acima com Sessio como tipo, assim permitindo que so comandos do banco possa ser usados 
             db.commit()
             db.refresh(objeto)
             return True 
@@ -31,9 +32,12 @@ class UserDAO(ComandosDAO):
             db.rollback()
             return False 
                 
-        '''
-        
-        '''
+    '''
+    Usa primariamente a mesma lógica de filtro do Search | Procurar
+    Por conta da História de usuario o excluir não sera uma exclusão da base de dados, mas sim inativa aconta do usuário
+    
+    
+    '''
         
     def excluir(self, id: int, db: Session)-> bool:
         usuario = db.query(User).filter(User.id == id).first()

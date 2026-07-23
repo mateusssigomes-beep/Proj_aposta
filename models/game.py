@@ -1,6 +1,7 @@
 import enum
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, CheckConstraint
 from persist.conexao_bd import Base
+from sqlalchemy.orm import relationship
 
 
 class StatusGame(enum.Enum):
@@ -20,8 +21,9 @@ class Game(Base):
     time_vencedor = Column(String(40), nullable=True)
     """Provavelmente pode dar problema (Revisar o Recebimento de dados para os dois parametros )"""
     time_casa_id = Column(Integer,ForeignKey('Team.id'), nullable=False)
+    time_casa = relationship("Team", foreign_keys=[time_casa_id])
     time_visitante_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
-    
+    time_visitante = relationship("Team", foreign_keys=[time_visitante_id])
     
     """
     table args = 
@@ -32,3 +34,7 @@ class Game(Base):
     __table_args__ = (
         CheckConstraint('time_casa_id != time_visitante_id', name = 'ck_times_diferentes'),
     )
+    
+    
+    def __repr__(self):
+         return f'Jogo Contendo {self.time_casa_id} e {self.time_visitante_id}, {self.data_jogo}, Id do jogo: {self.id}'

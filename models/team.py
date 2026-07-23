@@ -14,4 +14,5 @@ class Team(Base):
     
     
     
-    
+    def __repr__(self):
+        return f"Adicionando {self.nome} ao grupo {self.grupo}"
