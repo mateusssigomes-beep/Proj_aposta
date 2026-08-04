@@ -12,7 +12,7 @@ class StatusAposta(enum.Enum):
     EMPATE = 'Empatado'
 
 
-class Aposta(Base):
+class Bet(Base):
     __tablename__ = "Bet"
     
     id: Mapped[int] = mapped_column(primary_key=True)

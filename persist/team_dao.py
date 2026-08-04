@@ -18,10 +18,9 @@ class TeamDAO(BaseDAO):
             return True
         except SQLAlchemyError as Erro:
             print(f'Eroo: {Erro}')
+            db.rollback( )
             return False
-        
-    
-    
+              
     def excluir(self, id_team: int, db: Session) -> bool:
         """
         Hard delete. Time não tem regra de negócio pedindo soft delete (diferente de User).
@@ -38,8 +37,6 @@ class TeamDAO(BaseDAO):
             print(f'Erro: `{Erro}')
             db.rollback()
             return False 
-
-    
     
     def atualizar (self, id_team: int, objeto: Team, db: Session) -> bool:
         '''Edita e Atualiza os registros Existentes dentro do banco, retornando True caso tenha sucesso'''
@@ -59,8 +56,6 @@ class TeamDAO(BaseDAO):
             db.rollback()
             return False
             
-    
-    
     def pesquisar(self, id_team: int, db: Session) -> Optional[Team]:
 
         '''Pesquisa Regsitros Por ID, Otional procura pelo objeto mas se não encontrar ele Retorna None'''

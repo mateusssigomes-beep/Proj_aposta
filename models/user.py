@@ -16,7 +16,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(100), unique=False)
     data_nascimento: Mapped[date] 
-    cpf: Mapped[str] = mapped_column(String(11), unique=True)
+    cpf: Mapped[str] = mapped_column(String(40), unique=True)
     senha_hash: Mapped[str] = mapped_column(String(100))  
     email: Mapped[str] = mapped_column(String(100), unique=True)
     login: Mapped[str] = mapped_column(String(100), unique=True)
@@ -28,7 +28,7 @@ class User(Base):
         return f'Nome: {self.nome}, Login: {self.login}, Data de Nascimento: {self.data_nascimento}'
     
     
-    
+
     
     
     """

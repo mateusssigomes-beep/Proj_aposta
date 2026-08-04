@@ -12,16 +12,14 @@ class Team(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(40))
     grupo: Mapped[str] = mapped_column(String(40))
-    vitoria: Mapped[Optional[int]] # nullable = True
-    empate: Mapped[Optional[int]]  # nullable = True
-    derrota: Mapped[Optional[int]] # nullable = True 
+    vitoria: Mapped[int] = mapped_column(default=0)
+    empate: Mapped[int] = mapped_column(default=0) 
+    derrota: Mapped[int] = mapped_column(default=0)
   
     def __repr__(self):
-        
         """
         Retorno em String do Obejto, Usado para Visualizar o que esta  retornando
         """
-        
         return f"Time: {self.nome} | Grupo: {self.grupo} | Contendo:\n{self.vitoria} Vitórias |\n {self.derrota} Derrotas |\n{self.empate} Empates"
 
 

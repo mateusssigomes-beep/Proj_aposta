@@ -8,7 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 class UserDAO(BaseDAO):
     
     
-    def adicionar(self, objeto: User, db: Session)-> Optional[User]: 
+    def adicionar(self, objeto: User, db: Session)-> bool: 
         '''
         Comando de adicionar, Com base no objeto recebido, retornando True ou False
         Adiciona, Commita(Salva a alteração), refresh para ver como esta a tebela com o objeto adicionado nela
@@ -20,11 +20,11 @@ class UserDAO(BaseDAO):
             db.add(objeto) 
             db.commit()
             db.refresh(objeto)
-            return  
+            return True
         except SQLAlchemyError as erro:
-            print(f'Erro: {erro}')
             db.rollback()
-            return  
+            print(f'Erro: {erro}')
+            return False
         
     def excluir(self, id_user: int, db: Session)-> bool:
         '''
