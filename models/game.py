@@ -48,19 +48,4 @@ class Game(Base):
          return f'Jogo Contendo {self.time_casa_id} e {self.time_visitante_id}, {self.data_jogo}, Id do jogo: {self.id}'
      
      
-     
-"""class Game(Base):
-    __tablename__ = 'Game'
-    
-    id = Column(Integer, primary_key=True)
-    gol_time_casa = Column(Integer, nullable=True) #  Poder ser 0 / nulo, na criação, mas depois sera adicionado algum valor  
-    gol_time_visitante = Column(Integer, nullable=True) #  Poder ser 0 / nulo, na criação, mas depois sera adicionado algum valor 
-    data_jogo = Column(DateTime, nullable=False)
-    status = Column(Enum(StatusGame),nullable=False, default=StatusGame.MARCADO)
-    time_vencedor = Column(String(40), nullable=True) # Poder ser 0 / nulo, na criação, mas depois sera adicionado algum valor 
-
-    time_casa_id = Column(Integer,ForeignKey('Team.id'), nullable=False)
-    time_visitante_id = Column(Integer, ForeignKey('Team.id'), nullable=False)
-    time_casa = relationship("Team", foreign_keys=[time_casa_id])
-    time_visitante = relationship("Team", foreign_keys=[time_visitante_id])
-"""
+            

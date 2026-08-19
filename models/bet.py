@@ -1,7 +1,6 @@
 import enum 
-from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, Float, ForeignKey, String
+from sqlalchemy import ForeignKey
 from persist.conexao_bd import Base
 
 
@@ -28,21 +27,6 @@ class Bet(Base):
     
     
     
-    def __repr__(self):
-        return f'Status: {self.status} |\nOdd: {self.multiplier}'
-        
-"""class Aposta(Base):
-    __tablename__ = 'Bet'
-    
-    id = Column(Integer, primary_key=True)
-    multiplier = Column(Float, nullable=False)
-    pontos_apostados = Column(Integer ,nullable=False)
-    pontos_ganhos = Column(Integer ,nullable = True )
-    pontos_retornados = Column(Integer, nullable = True)
-    chute_time_casa = Column(Integer , nullable = False)
-    chute_time_visitante = Column(Integer, nullable= False)
-    status = Column(Enum(StatusAposta), nullable=False, default=StatusAposta.ANDAMENTO)
-    idGame = Column(Integer, ForeignKey('Game.id'),nullable=False)
-    idUser = Column(Integer, ForeignKey('User.id'),nullable=False )
-"""
+    # def __repr__(self):
+    #     return f'Status: {self.status} |\nOdd: {self.multiplier}'
     
