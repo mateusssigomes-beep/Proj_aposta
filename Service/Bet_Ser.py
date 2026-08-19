@@ -6,6 +6,7 @@ from persist.user_dao import UserDAO
 from models.bet import Bet, StatusAposta
 from models.game import Game, StatusGame
 from models.user import User
+from sqlalchemy.exc import SQLAlchemyError
 
 betdao = BetDAO()
 gamedao = GameDAO()
@@ -34,7 +35,7 @@ def calcular_odd(id_game: int, db: Session) -> tuple[float, float]:
    return odd_casa, odd_visitante
 
  
-def registrar_aposta(id_user: int, id_game: int, chute_gol_casa: int, chute_gol_visitante: int, pontos_apostados: int, db: Session,) -> Optional[Bet]:
+def registrar_bet(id_user: int, id_game: int, chute_gol_casa: int, chute_gol_visitante: int, pontos_apostados: int, db: Session,) -> Optional[Bet]:
     """
     Registra uma nova aposta. Debita os pontos do usuário no momento do registro.
     Retorna a Bet criada, ou None se alguma validação falhar.
@@ -65,18 +66,20 @@ def registrar_aposta(id_user: int, id_game: int, chute_gol_casa: int, chute_gol_
         idgame=id_game,
         iduser=id_user,
     )
- 
-    sucesso = betdao.adicionar(nova_aposta, db)
-    if not sucesso:
-        return None
- 
-    usuario.pontos -= pontos_apostados
-    db.commit()
+    
+    try:
+       db.add(nova_aposta)
+       usuario.pontos -= pontos_apostados
+       db.commit()
+       db.refresh(nova_aposta)
+    except SQLAlchemyError:
+       return None
+       
  
     return nova_aposta
  
  
-def multiplicar_aposta(id_bet: int, id_user: int, fator: int, db: Session) -> bool:
+def multiplicar_bet(id_bet: int, id_user: int, fator: int, db: Session) -> bool:
     """
     Multiplica os pontos de uma aposta já existente (x2, x3, x4, x5...).
     O multiplier (odd) da aposta permanece o mesmo, snapshot original.
@@ -102,19 +105,19 @@ def multiplicar_aposta(id_bet: int, id_user: int, fator: int, db: Session) -> bo
     return True
  
  
-def resolver_apostas_jogo(id_game: int, db: Session) -> bool:
+def final_game_bet(id_game: int, db: Session) -> bool:
     """
     Chamado quando o jogo é encerrado (Game.time_vencedor já definido pelo GameService).
     Resolve o status de cada Bet e credita/devolve pontos ao usuário conforme resultado.
     """
-    jogo = gamedao.pesquisar(id_game, db)
-    if not jogo or jogo.status != StatusGame.ENCERRADO:
+    game = gamedao.pesquisar(id_game, db)
+    if not game or game.status != StatusGame.ENCERRADO:
         return False
  
     apostas = betdao.listar_por_game(id_game, db)
  
-    gol_casa_real = jogo.gol_time_casa
-    gol_visitante_real = jogo.gol_time_visitante
+    gol_casa_real = game.gol_time_casa
+    gol_visitante_real = game.gol_time_visitante
  
     for aposta in apostas:
         usuario = userdao.pesquisar(aposta.iduser, db)
