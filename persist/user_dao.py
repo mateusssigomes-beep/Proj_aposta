@@ -91,11 +91,28 @@ class UserDAO(BaseDAO):
     def buscar_por_login(self, login: str, db: Session) -> Optional[User]:
         """Busca um usuário pelo campo login. Usado no fluxo de autenticação."""
         return db.query(User).filter(User.login == login).first()  
-   
+
+    def buscar_por_email(self, email: str, db: Session) -> Optional[User]:
+        return db.query(User).filter(User.email == email).first()
+
+    def buscar_por_cpf(self, cpf: str, db: Session) -> Optional[User]:
+        return db.query(User).filter(User.cpf == cpf).first()
+    
     def listar_todos(self, db:Session) -> List[User]:
         """
         """                
         return db.query(User).all()
     
-
-    
+    def atualizar_senha(self, id_user: int, nova_senha: str, db: Session) -> bool:
+        usuario = db.query(User).filter(User.id == id_user).first()
+        if not usuario:
+            return False
+        
+        try:
+            usuario.senha_hash = nova_senha
+            db.commit()
+            return True
+        except SQLAlchemyError as erro:
+            print(f'Erro: {erro}')
+            db.rollback()
+            return False

@@ -1,12 +1,11 @@
 from persist.base_dao import BaseDAO
 from typing import List, Optional
 from models.game import Game
-from models.team import Team 
 from sqlalchemy.orm import Session, joinedload 
 from sqlalchemy.exc import SQLAlchemyError
 
 
-class GameDao(BaseDAO):
+class GameDAO(BaseDAO):
     
     def adicionar (self, objeto: Game, db: Session) -> bool:
         '''Adiciona um novo registro no banco de dados, retornando True caso tenha sucesso'''        
@@ -16,7 +15,8 @@ class GameDao(BaseDAO):
             db.refresh(objeto)
             return True
         except SQLAlchemyError as Erro:
-            print(f'Erro: {Erro}')
+            print(f'Erro: {Erro} | Dando Rollback')
+            db.rollback()
             return False
     
     def excluir(self, id_game: int, db: Session) -> bool:
@@ -29,7 +29,8 @@ class GameDao(BaseDAO):
             db.commit()
             return True
         except SQLAlchemyError as Erro:
-            print(f'Erro: {Erro}')
+            print(f'Erro: {Erro}| Dando Rollback')
+            db.rollback()
             return False
      
     def atualizar (self, id_game: int, objeto: Game, db: Session) -> bool:
@@ -46,7 +47,7 @@ class GameDao(BaseDAO):
             db.commit()
             return True
         except SQLAlchemyError as Erro:
-            print(f'{Erro}')
+            print(f'{Erro} | Dando Rollback')
             db.rollback()
             return False
 
@@ -63,7 +64,7 @@ class GameDao(BaseDAO):
     
     def listar_todos(self, db: Session) -> List[Game]:
         ''' Comando que lista todos os obejetos que já foram povoados dentro do Banco, Retorna  Obejto caso ache, e Nonoe caso não tenha nada'''
-        return db.query().options(
+        return db.query(Game).options(
             joinedload(Game.time_casa),
-            joinedload(Game.gol_time_visitante)
+            joinedload(Game.time_visitante)
         ).all()
