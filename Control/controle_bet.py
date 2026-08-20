@@ -4,11 +4,19 @@ from persist.conexao_bd import get_db
 from Service import Bet_Ser as bet_service
 from schemas.schema_bet import RegistrarBetIn, MultiplicarBetIn
 from persist.bet_dao import BetDAO
+from persist.game_dao import GameDAO
 
 
+gamedao = GameDAO()
 betdao = BetDAO()
 router = APIRouter(prefix="/apostas", tags=['Aposta'])
 
+def verificar_admin(x_user_id: int = Header(),db:Session = Depends(get_db)):
+    """Checagem rápida"""
+    bet = betdao.pesquisar(x_user_id, db)
+    if not betdao:
+        raise HTTPException(status_code = 403, detail="Acesso restrito a Adms")
+    return betdao
 
 def _serializar(bet):
     return {
@@ -61,3 +69,32 @@ def status_aposta(id_bet: int, db: Session = Depends(get_db)):
 def listar_apostas_usuario(id_user: int, db: Session = Depends(get_db)):
     apostas = betdao.listar_por_user(id_user, db)
     return [_serializar(aposta) for aposta in apostas]
+
+
+@router.get("/jogos/{id_game}", dependencies=[Depends(verificar_admin)])
+def listar_apostas_do_jogo(id_game: int, db: Session = Depends(get_db)):
+    apostas = betdao.listar_por_game(id_game, db)
+    return [_serializar(aposta) for aposta in apostas]
+ 
+ 
+@router.get("/jogos/{id_game}/resumo", dependencies=[Depends(verificar_admin)])
+def listar_aposta_do_jogo_r(id_game:int ,db: Session = Depends(get_db)):
+    game = gamedao.pesquisar(id_game, db)
+    if not game:
+        raise HTTPException(status_code = 404, detail="jogo não encontrado")
+        
+     
+    apostas = betdao.listar_por_game(id_game, db)
+    apostadores_casa = sum(1 for a in apostas if a.chute_gol_casa > a.chute_gol_visitante)
+    apostadores_visitante = sum(1 for a in apostas if a.chute_gol_casa < a.chute_gol_visitante)
+    odd_casa, odd_visitante = bet_service.calcular_odd(id_game, db)
+
+    return {
+    "id_game": game.id,
+    "time_casa": game.time_casa.nome,
+    "time_visitante": game.time_visitante.nome,
+    "apostadores_casa": apostadores_casa,
+    "apostadores_visitante": apostadores_visitante,
+    "odd_casa": round(odd_casa, 2),
+    "odd_visitante": round(odd_visitante, 2),
+    }      

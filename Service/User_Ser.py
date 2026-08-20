@@ -1,5 +1,5 @@
 from typing import Optional
-from models.user import User
+from models.user import User, StatusUsuario
 from persist.user_dao import UserDAO
 from sqlalchemy.orm import Session
 from datetime import date
@@ -76,7 +76,7 @@ def cadastrar(dados, db:Session)-> tuple[Optional[User], Optional[ErroCadastro]]
 
 def autenticar(login:str, senha: str, db:Session) -> Optional[User]:
     usuario = user_dao.buscar_por_login(login, db)
-    if not usuario:
+    if not usuario or usuario.status != StatusUsuario.ATIVO:
         return None
     
     try:

@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 from persist.conexao_bd import get_db
 from schemas.schema_game import CriarJogoIn, EncerrarJogoIn
+from Service import api_externa
 
 router = APIRouter(prefix="jogos", tags=['Jogos'])
 gamedao = GameDAO()
@@ -27,13 +28,10 @@ def _serializar(game):
             "time_vencedor": game.time_vencedor,
             }
 
-
 @router.get("/")
 def listar_jogo(db:Session = Depends(get_db)):
     games = gamedao.listar_todos(db)
     return [_serializar(game) for game in games]
-
-
 
 @router.post("/" ,dependencies=[Depends(verificar_admin)])
 def criar_jogo(dados: CriarJogoIn, db: Session = Depends(get_db)):
@@ -51,10 +49,14 @@ def iniciar_jogo(id_game: int , db:Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Não foi possível inicair o jogo")
     return {"Mensagem": "Jogo iniciado"}
 
-
 @router.put("/{id_game}/encerrar",dependencies=[Depends(verificar_admin)])
 def encerrar_jogo(id_game: int, dados: EncerrarJogoIn, db: Session = Depends(get_db)):
     sucesso = game_service.encerrar_game(id_game, dados.gol_casa, dados.gol_visitante, db)
     if not sucesso:
         raise HTTPException(status_code=400, detail="Não foi possível encerrar o jogo")
     return {"Mensagem": "Jogo encerrado com Sucesso"}
+
+@router.post("/sincronizar", dependencies=[Depends(verificar_admin)])
+def sincronizar_times(db: Session = Depends(get_db)):
+    criados = api_externa.Sincroinzar_times(db)
+    return {"mensagem": f"{criados} time(s) novo(s) criado(s)"}

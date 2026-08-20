@@ -65,6 +65,25 @@ def login(dados: LoginIn, db: Session = Depends(get_db)):
         
     }
     
+@router.put("/{id_user}/cancelar")
+def cancelar_participacao(id_user: int, db: Session = Depends(get_db)):
+    sucesso = userdao.excluir(id_user, db)
+ 
+    if not sucesso:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+ 
+    return {"mensagem": "Participação cancelada, usuário marcado como inativo"}
+ 
+ 
+@router.get("/{id_user}/pontos")
+def consultar_pontos(id_user: int, db: Session = Depends(get_db)):
+    usuario = userdao.pesquisar(id_user, db)
+ 
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    return {"id": usuario.id, "pontos": usuario.pontos}   
+    
     
 @router.put("/{id_user}/senha")
 def trocar_senha(id_user: int, dados: TrocarSenha, db: Session = Depends(get_db)):
@@ -72,7 +91,6 @@ def trocar_senha(id_user: int, dados: TrocarSenha, db: Session = Depends(get_db)
     if not sucesso:
         raise HTTPException(status_code=400, detail="Não foi possível trocar a senha")
     return {"Mensagem": "Senha alterada com sucesso"}
-
 
 
 @router.get("/", dependencies=[Depends(verificar_admin)])
@@ -88,3 +106,4 @@ def buscar_user_cpf(cpf: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail = "Deu rui pra pesquisar por cpf ")
     
     return _serializar(usuario)
+
