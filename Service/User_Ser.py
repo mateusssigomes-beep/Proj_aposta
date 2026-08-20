@@ -51,7 +51,7 @@ def cadastrar(dados, db:Session)-> tuple[Optional[User], Optional[ErroCadastro]]
     if user_dao.buscar_por_login(dados.login, db):
         return None, ErroCadastro.LOGIN_EXISTENTE
     # Regra: Cpf não pode exsitir antes do cadastro 
-    if user_dao.buscar_por_cpf(dados.cpf_tratado,db):
+    if user_dao.buscar_por_cpf(cpf_tratado,db):
         return None, ErroCadastro.CPF_EXISTENTE
     # Regra Email Não pode estar existir antes do cadastro 
     if user_dao.buscar_por_email(dados.email, db):
@@ -63,7 +63,7 @@ def cadastrar(dados, db:Session)-> tuple[Optional[User], Optional[ErroCadastro]]
         
         nome = dados.nome,
         data_nascimento = dados.data_nascimento,
-        cpf = dados.cpf_tratado,
+        cpf = cpf_tratado,
         senha_hash = hash_senha,
         email = dados.email,
         login = dados.login,

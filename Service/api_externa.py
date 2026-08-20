@@ -4,8 +4,8 @@ from models.team import Team
 
 teamdao = TeamDAO()
 CHAVE_API = "123" # gratis 
-URL = "https://www.thesportsdb.com/api/v1/json/"
-LIGA = "4429" # É pra ser da copa do mundo
+URL = "https:/www.thesportsdb.com/api/v1/json"
+LIGA = "4328" 
 
 
 def buscar_times_copa()-> list[dict]:
@@ -15,7 +15,7 @@ def buscar_times_copa()-> list[dict]:
     """
     url = f"{URL}/{CHAVE_API}/lookup_all_teams.php"
     id_liga = {"id": LIGA}
-    
+    print(f'DEBUG url = {repr(url)}')
     try:
         reposta = requests.get(url, params=id_liga,  timeout=10)
         reposta.raise_for_status()
@@ -24,6 +24,7 @@ def buscar_times_copa()-> list[dict]:
         return []
  
     dados = reposta.json()
+    print(f'Times recebidos: {len(dados.get("teams") or [])}')
     return dados.get("teams") or []
  
 def Sincroinzar_times(db) -> int:

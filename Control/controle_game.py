@@ -24,9 +24,9 @@ def _serializar(game):
             "time_casa": game.time_casa.nome,
             "time_visitante": game.time_visitante.nome,
             "data_jogo": game.data_jogo,
-            "satatus": game.status.nome,
+            "status": game.status.nome,
             "gol_time_casa": game.gol_time_casa,
-            "gol_time_visitante": game.gol_visistante,
+            "gol_time_visitante": game.gol_time_visitante,
             "time_vencedor": game.time_vencedor,
             }
 
