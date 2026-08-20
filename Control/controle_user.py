@@ -19,7 +19,7 @@ router = APIRouter(prefix="/usuarios", tags=['Usuários'])
 def verificar_admin(x_user_id: int = Header(),db:Session = Depends(get_db)):
     """Checagem rápida"""
     usuario = userdao.pesquisar(x_user_id, db)
-    if not usuario:
+    if not usuario or not usuario.admin:
         raise HTTPException(status_code = 403, detail="Acesso restrito a Adms")
     return usuario
 
@@ -98,7 +98,7 @@ def listar_usuario(db:Session = Depends(get_db)):
     usuarios = userdao.listar_todos(db)
     return [_serializar(usuario) for usuario in usuarios]
 
-@router.get("/cpd/{cpf}", dependencies=[Depends(verificar_admin)])
+@router.get("/cpf/{cpf}", dependencies=[Depends(verificar_admin)])
 def buscar_user_cpf(cpf: str, db: Session = Depends(get_db)):
     usuario = userdao.buscar_por_cpf(cpf, db)
     
@@ -106,4 +106,4 @@ def buscar_user_cpf(cpf: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail = "Deu rui pra pesquisar por cpf ")
     
     return _serializar(usuario)
-
+ 

@@ -7,6 +7,7 @@ CHAVE_API = "123" # gratis
 URL = "https://www.thesportsdb.com/api/v1/json/"
 LIGA = "4429" # É pra ser da copa do mundo
 
+
 def buscar_times_copa()-> list[dict]:
     """
     Busca a lista de times da liga configurada em LIGA.
@@ -21,10 +22,10 @@ def buscar_times_copa()-> list[dict]:
     except requests.RequestException as erro:
         print(f'{erro}')
         return []
-
+ 
     dados = reposta.json()
-    return dados.get("team") or []
-
+    return dados.get("teams") or []
+ 
 def Sincroinzar_times(db) -> int:
     """
     Busca os times da API externa e cria os que ainda não existem no banco
@@ -37,12 +38,12 @@ def Sincroinzar_times(db) -> int:
     for time in times_api:
         nome = (time.get("strTeam") or "")[:40]
         grupo = (time.get("strLeague") or "Sem grupo")[:40]
-
-    if not nome or teamdao.buscar_por_nome(nome, db):
-        pass
-
-    novo_time = Team(nome=nome, grupo=grupo)
-    if teamdao.adicionar(novo_time, db):
-        criados += 1
+ 
+        if not nome or teamdao.buscar_por_nome(nome, db):
+            continue
+ 
+        novo_time = Team(nome=nome, grupo=grupo)
+        if teamdao.adicionar(novo_time, db):
+            criados += 1
  
     return criados
