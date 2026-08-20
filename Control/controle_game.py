@@ -9,8 +9,16 @@ router = APIRouter(prefix="jogos", tags=['Jogos'])
 gamedao = GameDAO()
 
 def _serializar(game):
-    return { }
-
+    return { 
+            "id": game.id,
+            "time_casa": game.time_casa.nome,
+            "time_visitante": game.time_visitante.nome,
+            "data_jogo": game.data_jogo,
+            "satatus": game.status.nome,
+            "gol_time_casa": game.gol_time_casa,
+            "gol_time_visitante": game.gol_visistante,
+            "time_vencedor": game.time_vencedor,
+            }
 
 
 @router.get("/")
@@ -26,13 +34,22 @@ def criar_jogo(dados: CriarJogoIn, db: Session = Depends(get_db)):
     if not game:
         raise HTTPException(status_code = 400, detail="Não foi possível criar o jogo")
     
+    return _serializar(game)
+    
     
 @router.put("/{id_game}/iniciar")
 def iniciar_jogo(id_game: int , db:Session = Depends(get_db)):
     sucesso = game_service.iniciar_game(id_game, db)
     if not sucesso:
-        raise HTTPE
+        raise HTTPException(status_code=400, detail="Não foi possível inicair o jogo")
+    return {"Mensagem": "Jogo iniciado"}
+
+
+
 
 @router.put("/{id_game}/encerrar")
 def encerrar_jogo(id_game: int, dados: EncerrarJogoIn, db: Session = Depends(get_db)):
     sucesso = game_service.encerrar_game(id_game, dados.gol_casa, dados.gol_visitante, db)
+    if not sucesso:
+        raise HTTPException(status_code=400, detail="Não foi possível encerrar o jogo")
+    return {"Mensagem": "Jogo encerrado com Sucesso"}
