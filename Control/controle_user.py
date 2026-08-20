@@ -1,5 +1,5 @@
 #from types import SimpleNamespace # resolve problema do pydantic de receber dados em formatos incorretos
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 # Router Agrupas as rotas 
 # depends injeta a sessão do banco 
 # HTTp Sinaliza erro pro cliente
@@ -10,9 +10,31 @@ from persist.conexao_bd import get_db
 from Service import User_Ser as user_service
 # traz o service pra nós 
 from schemas.schema_user import CadastroIn, LoginIn, TrocarSenha
+from persist.user_dao import UserDAO 
 
+userdao = UserDAO()
 router = APIRouter(prefix="/usuarios", tags=['Usuários'])
 
+
+def verificar_admin(x_user_id: int = Header(),db:Session = Depends(get_db)):
+    """Checagem rápida"""
+    usuario = userdao.pesquisar(x_user_id, db)
+    if not usuario:
+        raise HTTPException(status_code = 403, detail="Acesso restrito a Adms")
+    return usuario
+
+
+def _serializar(usuario):
+    return {
+        "id": usuario.id,
+        "nome": usuario.nome,
+        "login": usuario.login,
+        "email": usuario.email,
+        "cpf": usuario.cpf,
+        "status": usuario.status.name,
+        "pontos": usuario.pontos,
+        "admin": usuario.admin,
+    }
 
 @router.post("/cadastro")
 def cadastrar_usuario(dados: CadastroIn, db:Session = Depends(get_db)):
@@ -50,3 +72,19 @@ def trocar_senha(id_user: int, dados: TrocarSenha, db: Session = Depends(get_db)
     if not sucesso:
         raise HTTPException(status_code=400, detail="Não foi possível trocar a senha")
     return {"Mensagem": "Senha alterada com sucesso"}
+
+
+
+@router.get("/", dependencies=[Depends(verificar_admin)])
+def listar_usuario(db:Session = Depends(get_db)):
+    usuarios = userdao.listar_todos(db)
+    return [_serializar(usuario) for usuario in usuarios]
+
+@router.get("/cpd/{cpf}", dependencies=[Depends(verificar_admin)])
+def buscar_user_cpf(cpf: str, db: Session = Depends(get_db)):
+    usuario = userdao.buscar_por_cpf(cpf, db)
+    
+    if not usuario:
+        raise HTTPException(status_code=404, detail = "Deu rui pra pesquisar por cpf ")
+    
+    return _serializar(usuario)

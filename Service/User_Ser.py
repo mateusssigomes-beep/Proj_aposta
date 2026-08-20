@@ -46,7 +46,7 @@ def cadastrar(dados, db:Session)-> tuple[Optional[User], Optional[ErroCadastro]]
     if not validar_forca_senha(dados.senha):
         return None, ErroCadastro.SENHA_FRACA
     #Tratamento CPF
-    dados.cpf_tratado = ''.join(filter(str.isdigit, dados.cpf))
+    cpf_tratado = ''.join(filter(str.isdigit, dados.cpf))
     #Regra: Login não pode estar cadastrado
     if user_dao.buscar_por_login(dados.login, db):
         return None, ErroCadastro.LOGIN_EXISTENTE

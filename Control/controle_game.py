@@ -1,12 +1,19 @@
 from persist.game_dao import GameDAO
 import Service.Game_Ser as game_service
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 from persist.conexao_bd import get_db
 from schemas.schema_game import CriarJogoIn, EncerrarJogoIn
 
 router = APIRouter(prefix="jogos", tags=['Jogos'])
 gamedao = GameDAO()
+
+def verificar_admin(x_user_id: int = Header(),db:Session = Depends(get_db)):
+    """Checagem rápida"""
+    game = gamedao.pesquisar(x_user_id, db)
+    if not game:
+        raise HTTPException(status_code = 403, detail="Acesso restrito a Adms")
+    return game
 
 def _serializar(game):
     return { 
@@ -28,7 +35,7 @@ def listar_jogo(db:Session = Depends(get_db)):
 
 
 
-@router.post("/")
+@router.post("/" ,dependencies=[Depends(verificar_admin)])
 def criar_jogo(dados: CriarJogoIn, db: Session = Depends(get_db)):
     game = game_service.criair_game(dados.time_casa_id, dados.time_visitante_id, dados.data_jogo, db)
     if not game:
@@ -37,7 +44,7 @@ def criar_jogo(dados: CriarJogoIn, db: Session = Depends(get_db)):
     return _serializar(game)
     
     
-@router.put("/{id_game}/iniciar")
+@router.put("/{id_game}/iniciar",dependencies=[Depends(verificar_admin)])
 def iniciar_jogo(id_game: int , db:Session = Depends(get_db)):
     sucesso = game_service.iniciar_game(id_game, db)
     if not sucesso:
@@ -45,9 +52,7 @@ def iniciar_jogo(id_game: int , db:Session = Depends(get_db)):
     return {"Mensagem": "Jogo iniciado"}
 
 
-
-
-@router.put("/{id_game}/encerrar")
+@router.put("/{id_game}/encerrar",dependencies=[Depends(verificar_admin)])
 def encerrar_jogo(id_game: int, dados: EncerrarJogoIn, db: Session = Depends(get_db)):
     sucesso = game_service.encerrar_game(id_game, dados.gol_casa, dados.gol_visitante, db)
     if not sucesso:

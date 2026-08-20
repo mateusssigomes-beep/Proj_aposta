@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 from persist.conexao_bd import get_db
 from Service import Bet_Ser as bet_service
@@ -8,6 +8,7 @@ from persist.bet_dao import BetDAO
 
 betdao = BetDAO()
 router = APIRouter(prefix="/apostas", tags=['Aposta'])
+
 
 def _serializar(bet):
     return {
@@ -54,7 +55,6 @@ def status_aposta(id_bet: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Aposta não encontrada")
     
     return _serializar(bet)
-    
     
     
 @router.get("/usuarios/{id_user}")

@@ -71,7 +71,7 @@ def encerrar_game(id_game: int, gol_casa : int, gol_visitante: int, db:Session )
         db.commit()
     except SQLAlchemyError as erro:
         print(f'{erro}')
-        db.rollback
+        db.rollback()
         return False
         
     return bet_service.final_game_bet(id_game, db)
