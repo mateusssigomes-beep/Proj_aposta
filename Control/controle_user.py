@@ -64,7 +64,17 @@ def login(dados: LoginIn, db: Session = Depends(get_db)):
         "pontos": usuario.pontos,
         
     }
-    
+
+
+
+@router.put("/{id_user}/senha")
+def trocar_senha(id_user: int, dados: TrocarSenha, db: Session = Depends(get_db)):
+    sucesso = user_service.trocar_senha(id_user, dados.senha_atual, dados.senha_nova, db)
+    if not sucesso:
+        raise HTTPException(status_code=400, detail="Não foi possível trocar a senha")
+    return {"Mensagem": "Senha alterada com sucesso"}
+
+
 @router.put("/{id_user}/cancelar")
 def cancelar_participacao(id_user: int, db: Session = Depends(get_db)):
     sucesso = userdao.excluir(id_user, db)
@@ -85,14 +95,6 @@ def consultar_pontos(id_user: int, db: Session = Depends(get_db)):
     return {"id": usuario.id, "pontos": usuario.pontos}   
     
     
-@router.put("/{id_user}/senha")
-def trocar_senha(id_user: int, dados: TrocarSenha, db: Session = Depends(get_db)):
-    sucesso = user_service.trocar_senha(id_user, dados.senha_atual, dados.senha_nova, db)
-    if not sucesso:
-        raise HTTPException(status_code=400, detail="Não foi possível trocar a senha")
-    return {"Mensagem": "Senha alterada com sucesso"}
-
-
 @router.get("/", dependencies=[Depends(verificar_admin)])
 def listar_usuario(db:Session = Depends(get_db)):
     usuarios = userdao.listar_todos(db)

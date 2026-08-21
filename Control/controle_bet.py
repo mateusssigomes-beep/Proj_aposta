@@ -31,23 +31,6 @@ def _serializar(bet):
     "status": bet.status.name,
 }
 
-@router.post("/usuarios/{id_user}")
-def registrar_aposta(id_user: int, dados: RegistrarBetIn, db: Session = Depends(get_db)):
-    bet = bet_service.registrar_bet(
-        id_user,
-        dados.id_game,
-        dados.chute_gol_casa,
-        dados.chute_gol_visitante,
-        dados.pontos_apostados,
-        db,
-    )
-    
-    if not bet:
-        raise HTTPException(status_code = 400, detail ="não foi possível registrar a aposta")
-    
-    return _serializar(bet)
-
-
 @router.put("/{id_bet}/usuarios/{id_user}/multiplicar")
 def multiplicar_aposta(id_bet: int, id_user: int, dados: MultiplicarBetIn, db: Session = Depends(get_db)):
     sucesso = bet_service.multiplicar_bet(id_bet,id_user, dados.fator, db)
@@ -118,3 +101,20 @@ def ranking_apostadores(db: Session = Depends(get_db)):
  
     ranking.sort(key=lambda u: u["acertos"], reverse=True)
     return ranking
+
+
+@router.post("/usuarios/{id_user}")
+def registrar_aposta(id_user: int, dados: RegistrarBetIn, db: Session = Depends(get_db)):
+    bet = bet_service.registrar_bet(
+        id_user,
+        dados.id_game,
+        dados.chute_gol_casa,
+        dados.chute_gol_visitante,
+        dados.pontos_apostados,
+        db,
+    )
+    
+    if not bet:
+        raise HTTPException(status_code = 400, detail ="não foi possível registrar a aposta")
+    
+    return _serializar(bet)
